@@ -22,4 +22,4 @@ Fork du template ComfyUI pour WAN 2.1/2.2 (Alibaba models) sur RunPod. Supporte 
 ## Licence
 AGPL-3.0 (original Hearmeman24/comfyui-wan).
 
-See RAPPORT.md pour analyse détaillée (dans projet parent).
+See RAPPORT.md pour analyse détaillée (dans projet parent).## Updated for Docker build retry (fixed secret)
