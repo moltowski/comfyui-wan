@@ -68,11 +68,6 @@ else
     echo "Directory already exists, skipping move."
 fi
 
-echo "Downloading CivitAI download script to /usr/local/bin"
-git clone "https://github.com/Hearmeman24/CivitAI_Downloader.git" || { echo "Git clone failed"; exit 1; }
-mv CivitAI_Downloader/download_with_aria.py "/usr/local/bin/" || { echo "Move failed"; exit 1; }
-chmod +x "/usr/local/bin/download_with_aria.py" || { echo "Chmod failed"; exit 1; }
-rm -rf CivitAI_Downloader  # Clean up the cloned repo
 pip install onnxruntime-gpu &
 
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper" ]; then
@@ -359,48 +354,7 @@ while pgrep -x "aria2c" > /dev/null; do
     sleep 5  # Check every 5 seconds
 done
 
-declare -A MODEL_CATEGORIES=(
-    ["$NETWORK_VOLUME/ComfyUI/models/checkpoints"]="$CHECKPOINT_IDS_TO_DOWNLOAD"
-    ["$NETWORK_VOLUME/ComfyUI/models/loras"]="$LORAS_IDS_TO_DOWNLOAD"
-)
-
-# Counter to track background jobs
-download_count=0
-
-# Ensure directories exist and schedule downloads in background
-for TARGET_DIR in "${!MODEL_CATEGORIES[@]}"; do
-    mkdir -p "$TARGET_DIR"
-    MODEL_IDS_STRING="${MODEL_CATEGORIES[$TARGET_DIR]}"
-
-    # Skip if the value is the default placeholder
-    if [[ "$MODEL_IDS_STRING" == "replace_with_ids" ]]; then
-        echo "⏭️  Skipping downloads for $TARGET_DIR (default value detected)"
-        continue
-    fi
-
-    IFS=',' read -ra MODEL_IDS <<< "$MODEL_IDS_STRING"
-
-    for MODEL_ID in "${MODEL_IDS[@]}"; do
-        sleep 1
-        echo "🚀 Scheduling download: $MODEL_ID to $TARGET_DIR"
-        (cd "$TARGET_DIR" && download_with_aria.py -m "$MODEL_ID") &
-        ((download_count++))
-    done
-done
-
-echo "📋 Scheduled $download_count downloads in background"
-
-# Wait for all downloads to complete
-echo "⏳ Waiting for downloads to complete..."
-while pgrep -x "aria2c" > /dev/null; do
-    echo "🔽 LoRA Downloads still in progress..."
-    sleep 5  # Check every 5 seconds
-done
-
-
-echo "✅ All models downloaded successfully!"
-
-echo "All downloads completed!"
+echo "✅ Model setup complete (CivitAI downloader removed)"
 
 
 echo "Downloading upscale models"
@@ -583,7 +537,7 @@ nohup python3 "$NETWORK_VOLUME/ComfyUI/main.py" --listen --use-sage-attention > 
             echo "3. If you are using a B200 GPU, it is currently not supported"
             echo "4. If all else fails, open the web terminal by clicking \"connect\", \"enable web terminal\" and running:"
             echo "   cat comfyui_${RUNPOD_POD_ID}_nohup.log"
-            echo "   This should show a ComfyUI error. Please paste the error in HearmemanAI Discord Server for assistance."
+            echo "   This should show a ComfyUI error. Check the logs above for details."
             echo ""
             echo "📋 Startup logs location: $NETWORK_VOLUME/comfyui_${RUNPOD_POD_ID}_nohup.log"
             break
