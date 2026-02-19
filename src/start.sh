@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
 
-set -e
-
 # Use libtcmalloc for better memory management
 TCMALLOC="$(ldconfig -p | grep -Po "libtcmalloc.so.\d" | head -n 1)"
 export LD_PRELOAD="${TCMALLOC}"
+
+# Wait for network to be ready
+echo "Waiting for network..."
+for i in {1..30}; do
+    if ping -c 1 github.com &>/dev/null; then
+        echo "Network is ready!"
+        break
+    fi
+    echo "Waiting for network... ($i/30)"
+    sleep 2
+done
 
 # This is in case there's any special installs or overrides that needs to occur when starting the machine before starting ComfyUI
 if [ -f "/workspace/additional_params.sh" ]; then
@@ -17,14 +26,14 @@ fi
 
 if ! which aria2 > /dev/null 2>&1; then
     echo "Installing aria2..."
-    apt-get update && apt-get install -y aria2
+    apt-get update && apt-get install -y aria2 || echo "apt-get failed, continuing anyway..."
 else
     echo "aria2 is already installed"
 fi
 
 if ! which curl > /dev/null 2>&1; then
     echo "Installing curl..."
-    apt-get update && apt-get install -y curl
+    apt-get update && apt-get install -y curl || echo "apt-get failed, continuing anyway..."
 else
     echo "curl is already installed"
 fi
@@ -34,10 +43,10 @@ echo "Starting SageAttention build..."
 (
     export EXT_PARALLEL=4 NVCC_APPEND_FLAGS="--threads 8" MAX_JOBS=32
     cd /tmp
-    git clone https://github.com/thu-ml/SageAttention.git
+    git clone https://github.com/thu-ml/SageAttention.git || { echo "SageAttention clone failed"; exit 0; }
     cd SageAttention
     git reset --hard 68de379
-    pip install -e .
+    pip install -e . || echo "SageAttention install failed"
     echo "SageAttention build completed" > /tmp/sage_build_done
 ) > /tmp/sage_build.log 2>&1 &
 SAGE_PID=$!
@@ -74,77 +83,79 @@ pip install onnxruntime-gpu &
 
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
-    git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git
+    git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git || echo "Git clone failed, will try later..."
 else
     echo "Updating WanVideoWrapper"
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper
-    git pull
+    git pull || echo "Git pull failed, continuing..."
 fi
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
-    git clone https://github.com/kijai/ComfyUI-KJNodes.git
-    cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes
-    git reset --hard 204f6d5
+    git clone https://github.com/kijai/ComfyUI-KJNodes.git || echo "Git clone failed, will try later..."
+    if [ -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes" ]; then
+        cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes
+        git reset --hard 204f6d5 || echo "Git reset failed..."
+    fi
 else
     echo "Updating KJ Nodes"
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes
-    git pull
-    git reset --hard 204f6d5
+    git pull || echo "Git pull failed..."
+    git reset --hard 204f6d5 || echo "Git reset failed..."
 fi
 
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-VibeVoice" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
-    git clone https://github.com/wildminder/ComfyUI-VibeVoice.git
+    git clone https://github.com/wildminder/ComfyUI-VibeVoice.git || echo "Git clone failed, will try later..."
 else
     echo "Updating VibeVoice"
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-VibeVoice
-    git pull
+    git pull || echo "Git pull failed..."
 fi
 
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanAnimatePreprocess" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
-    git clone https://github.com/kijai/ComfyUI-WanAnimatePreprocess.git
+    git clone https://github.com/kijai/ComfyUI-WanAnimatePreprocess.git || echo "Git clone failed, will try later..."
 else
     echo "Updating WanAnimatePreprocess"
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanAnimatePreprocess
-    git pull
+    git pull || echo "Git pull failed..."
 fi
 
 
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-FSampler" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
-    git clone https://github.com/obisin/ComfyUI-FSampler.git
+    git clone https://github.com/obisin/ComfyUI-FSampler.git || echo "Git clone failed, will try later..."
 else
     echo "Updating FSampler"
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-FSampler
-    git pull
+    git pull || echo "Git pull failed..."
 fi
 
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanMoEScheduler" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
-    git clone https://github.com/cmeka/ComfyUI-WanMoEScheduler.git
+    git clone https://github.com/cmeka/ComfyUI-WanMoEScheduler.git || echo "Git clone failed, will try later..."
 else
     echo "Updating WanMoEScheduler"
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanMoEScheduler
-    git pull
+    git pull || echo "Git pull failed..."
 fi
 
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-VAE-Utils" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
-    git clone https://github.com/lrzjason/ComfyUI-VAE-Utils.git
+    git clone https://github.com/lrzjason/ComfyUI-VAE-Utils.git || echo "Git clone failed, will try later..."
 else
     echo "Updating VAE Utils"
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-VAE-Utils
-    git pull
+    git pull || echo "Git pull failed..."
 fi
 
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-Wan22FMLF" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
-    git clone https://github.com/wallen0322/ComfyUI-Wan22FMLF.git
+    git clone https://github.com/wallen0322/ComfyUI-Wan22FMLF.git || echo "Git clone failed, will try later..."
 else
     echo "Updating Wan22FMLF"
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-Wan22FMLF
-    git pull
+    git pull || echo "Git pull failed..."
 fi
 
 
