@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # Use libtcmalloc for better memory management
 TCMALLOC="$(ldconfig -p | grep -Po "libtcmalloc.so.\d" | head -n 1)"
 export LD_PRELOAD="${TCMALLOC}"
@@ -553,4 +555,4 @@ nohup python3 "$NETWORK_VOLUME/ComfyUI/main.py" --listen --use-sage-attention > 
         echo "🚀 ComfyUI is UP"
     fi
 
-    sleep infinity
+    exec sleep infinity
