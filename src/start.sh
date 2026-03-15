@@ -84,10 +84,15 @@ pip install onnxruntime-gpu &
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
     git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git || echo "Git clone failed, will try later..."
+    if [ -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper" ]; then
+        cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper
+        git reset --hard df8f3e4 || echo "Git reset failed..."
+    fi
 else
     echo "Updating WanVideoWrapper"
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper
     git pull || echo "Git pull failed, continuing..."
+    git reset --hard df8f3e4 || echo "Git reset failed..."
 fi
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes

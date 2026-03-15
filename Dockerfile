@@ -58,9 +58,7 @@ RUN for repo in \
     https://github.com/JPS-GER/ComfyUI_JPS-Nodes.git \
     https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes.git \
     https://github.com/Jordach/comfy-plasma.git \
-    https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git \
     https://github.com/bash-j/mikey_nodes.git \
-    https://github.com/ltdrdata/ComfyUI-Impact-Pack.git \
     https://github.com/Fannovel16/comfyui_controlnet_aux.git \
     https://github.com/yolain/ComfyUI-Easy-Use.git \
     https://github.com/kijai/ComfyUI-Florence2.git \
@@ -70,7 +68,6 @@ RUN for repo in \
     https://github.com/cubiq/ComfyUI_essentials.git \
     https://github.com/chrisgoringe/cg-image-picker.git \
     https://github.com/chflame163/ComfyUI_LayerStyle.git \
-    https://github.com/chrisgoringe/cg-use-everywhere.git \
     https://github.com/kijai/ComfyUI-segment-anything-2.git \
     https://github.com/ClownsharkBatwing/RES4LYF \
     https://github.com/welltop-cn/ComfyUI-TeaCache.git \
@@ -96,6 +93,28 @@ RUN for repo in \
             python "/ComfyUI/custom_nodes/$repo_dir/install.py"; \
         fi; \
     done
+
+# Pin critical custom nodes to known-stable commits
+# ComfyUI-VideoHelperSuite @ 330bce6 (2026-01-09)
+RUN cd /ComfyUI/custom_nodes && \
+    git clone https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git && \
+    cd ComfyUI-VideoHelperSuite && \
+    git reset --hard 330bce6 && \
+    pip install -r requirements.txt
+
+# cg-use-everywhere @ a834f09 (2026-02-23)
+RUN cd /ComfyUI/custom_nodes && \
+    git clone https://github.com/chrisgoringe/cg-use-everywhere.git && \
+    cd cg-use-everywhere && \
+    git reset --hard a834f09
+
+# ComfyUI-Impact-Pack @ e22f68f (2026-01-02)
+RUN cd /ComfyUI/custom_nodes && \
+    git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git && \
+    cd ComfyUI-Impact-Pack && \
+    git reset --hard e22f68f && \
+    if [ -f requirements.txt ]; then pip install -r requirements.txt; fi && \
+    if [ -f install.py ]; then python install.py; fi
 
 COPY src/start_script.sh /start_script.sh
 COPY src/start.sh /start.sh
