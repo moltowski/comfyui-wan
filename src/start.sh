@@ -84,28 +84,26 @@ pip install onnxruntime-gpu &
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
     git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git || echo "Git clone failed, will try later..."
-    if [ -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper" ]; then
-        cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper
-        git reset --hard df8f3e4 || echo "Git reset failed..."
-    fi
-else
-    echo "Updating WanVideoWrapper"
-    cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper
-    git pull || echo "Git pull failed, continuing..."
-    git reset --hard df8f3e4 || echo "Git reset failed..."
+    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper fetch --all || echo "Git fetch failed, continuing..."
+    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper checkout df8f3e4 || echo "Git checkout failed..."
+fi
+if [ -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper" ]; then
+    echo "Pinning WanVideoWrapper to df8f3e4"
+    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper pull || echo "Git pull failed, continuing..."
+    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper fetch --all || echo "Git fetch failed, continuing..."
+    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper checkout df8f3e4 || echo "Git checkout failed..."
 fi
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
     git clone https://github.com/kijai/ComfyUI-KJNodes.git || echo "Git clone failed, will try later..."
-    if [ -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes" ]; then
-        cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes
-        git reset --hard 204f6d5 || echo "Git reset failed..."
-    fi
-else
-    echo "Updating KJ Nodes"
-    cd $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes
-    git pull || echo "Git pull failed..."
-    git reset --hard 204f6d5 || echo "Git reset failed..."
+    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes fetch --all || echo "Git fetch failed, continuing..."
+    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes checkout 204f6d5 || echo "Git checkout failed..."
+fi
+if [ -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes" ]; then
+    echo "Pinning KJNodes to 204f6d5"
+    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes pull || echo "Git pull failed, continuing..."
+    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes fetch --all || echo "Git fetch failed, continuing..."
+    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes checkout 204f6d5 || echo "Git checkout failed..."
 fi
 
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-VibeVoice" ]; then
