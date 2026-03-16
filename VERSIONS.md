@@ -9,16 +9,17 @@
 |------|--------|------|---------------------|
 | kijai/ComfyUI-WanVideoWrapper | df8f3e4 | 2026-02-22 | I2V, T2V |
 | kijai/ComfyUI-KJNodes | 204f6d5 | - | I2V, T2V |
-| Kosinkadink/ComfyUI-VideoHelperSuite | 330bce6 | - | I2V, T2V |
-| chrisgoringe/cg-use-everywhere | a834f09 | - | T2V |
-| ltdrdata/ComfyUI-Impact-Pack | e22f68f | - | T2I, T2V |
+| Kosinkadink/ComfyUI-VideoHelperSuite | 993082e | - | I2V, T2V |
+| chrisgoringe/cg-use-everywhere | c01c3ce | - | T2V |
+| ltdrdata/ComfyUI-Impact-Pack | 6a517eb | - | T2I, T2V |
+| kijai/ComfyUI-FSampler | 5479059 | - | I2V, T2V |
+| chflame163/ComfyUI_LayerStyle | d94bef1 | - | I2V |
 
 ## Custom Nodes stables (non pinnés pour l'instant)
 
 | Repo | Workflows concernés | Raison |
 |------|---------------------|--------|
 | rgthree/rgthree-comfy | I2V | Stable, peu de breaking changes |
-| chflame163/ComfyUI_LayerStyle | I2V | Stable |
 | Fannovel16/ComfyUI_FrameInterpolation (RIFE) | I2V, T2V | Stable |
 | yolain/ComfyUI-Easy-Use | I2V | Utilitaires |
 | jps01/comfyui-jps-nodes | T2I | Stable |
@@ -31,7 +32,7 @@
 
 | Composant | Version | Note |
 |-----------|---------|------|
-| ComfyUI | non pinné (comfy-cli) | ⚠️ À pinner — récupérer avec : git -C /workspace/ComfyUI log --oneline -1 |
+| ComfyUI | v0.17.2 / 04046049 | Pinné dans start.sh via git checkout v0.17.2 |
 | SageAttention | commit 68de379 | Pinné dans start.sh |
 | PyTorch | nightly cu128 | ⚠️ Non versionné |
 

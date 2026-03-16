@@ -79,6 +79,11 @@ else
     echo "Directory already exists, skipping move."
 fi
 
+# Pin ComfyUI to v0.17.2
+git -C "$COMFYUI_DIR" pull || echo "ComfyUI git pull failed, continuing..."
+git -C "$COMFYUI_DIR" fetch --all || echo "ComfyUI git fetch failed, continuing..."
+git -C "$COMFYUI_DIR" checkout v0.17.2 || echo "ComfyUI git checkout v0.17.2 failed..."
+
 pip install onnxruntime-gpu &
 
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper" ]; then

@@ -95,24 +95,24 @@ RUN for repo in \
     done
 
 # Pin critical custom nodes to known-stable commits
-# ComfyUI-VideoHelperSuite @ 330bce6 (2026-01-09)
+# ComfyUI-VideoHelperSuite @ 993082e
 RUN cd /ComfyUI/custom_nodes && \
     git clone https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git && \
     cd ComfyUI-VideoHelperSuite && \
-    git reset --hard 330bce6 && \
+    git reset --hard 993082e && \
     pip install -r requirements.txt
 
-# cg-use-everywhere @ a834f09 (2026-02-23)
+# cg-use-everywhere @ c01c3ce
 RUN cd /ComfyUI/custom_nodes && \
     git clone https://github.com/chrisgoringe/cg-use-everywhere.git && \
     cd cg-use-everywhere && \
-    git reset --hard a834f09
+    git reset --hard c01c3ce
 
-# ComfyUI-Impact-Pack @ e22f68f (2026-01-02)
+# ComfyUI-Impact-Pack @ 6a517eb
 RUN cd /ComfyUI/custom_nodes && \
     git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git && \
     cd ComfyUI-Impact-Pack && \
-    git reset --hard e22f68f && \
+    git reset --hard 6a517eb && \
     if [ -f requirements.txt ]; then pip install -r requirements.txt; fi && \
     if [ -f install.py ]; then python install.py; fi
 
