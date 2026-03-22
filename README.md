@@ -1,7 +1,17 @@
-# ComfyUI-WAN Template
+# ComfyUI-WAN Template — R&D
 
-## Overview
-Fork du template ComfyUI pour WAN 2.1/2.2 (Alibaba models) sur RunPod. Supporte T2V, I2V, animations, extensions vidéo (60FPS, LoRAs comme CausVid/Self-Forcing).
+> **⚠️ Ceci est le template R&D** (`comfyui-wan-dev`).
+> Les custom nodes sont **non-pinnés** (toujours mis à jour au boot) et ComfyUI-Manager est installé automatiquement.
+> Pour la version stable avec nodes pinnés, voir le repo prod : [moltowski/comfyui-wan](https://github.com/moltowski/comfyui-wan).
+
+## Vue d'ensemble
+Fork R&D du template ComfyUI pour WAN 2.1/2.2 (Alibaba models) sur RunPod. Supporte T2V, I2V, animations, extensions vidéo (60FPS, LoRAs comme CausVid/Self-Forcing).
+
+**Différences avec le repo prod :**
+- Custom nodes (`WanVideoWrapper`, `KJNodes`, etc.) non-pinnés — `git pull` à chaque boot
+- SageAttention non-pinné — toujours la dernière version
+- ComfyUI-Manager installé automatiquement
+- SHAs actifs affichés en fin de démarrage
 
 - **Modèles :** WAN 2.2 14B/5B (high/low noise), VACE, Steady Dancer, Infinite Talk.
 - **Nœuds Custom :** 27+ (WanVideoWrapper, KJNodes, VHS, etc.).

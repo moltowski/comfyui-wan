@@ -45,7 +45,6 @@ echo "Starting SageAttention build..."
     cd /tmp
     git clone https://github.com/thu-ml/SageAttention.git || { echo "SageAttention clone failed"; exit 0; }
     cd SageAttention
-    git reset --hard 68de379
     pip install -e . || echo "SageAttention install failed"
     echo "SageAttention build completed" > /tmp/sage_build_done
 ) > /tmp/sage_build.log 2>&1 &
@@ -89,26 +88,24 @@ pip install onnxruntime-gpu &
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
     git clone https://github.com/kijai/ComfyUI-WanVideoWrapper.git || echo "Git clone failed, will try later..."
-    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper fetch --all || echo "Git fetch failed, continuing..."
-    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper checkout df8f3e4 || echo "Git checkout failed..."
-fi
-if [ -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper" ]; then
-    echo "Pinning WanVideoWrapper to df8f3e4"
+else
+    echo "Updating WanVideoWrapper to latest"
     git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper pull || echo "Git pull failed, continuing..."
-    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper fetch --all || echo "Git fetch failed, continuing..."
-    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper checkout df8f3e4 || echo "Git checkout failed..."
 fi
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes" ]; then
     cd $NETWORK_VOLUME/ComfyUI/custom_nodes
     git clone https://github.com/kijai/ComfyUI-KJNodes.git || echo "Git clone failed, will try later..."
-    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes fetch --all || echo "Git fetch failed, continuing..."
-    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes checkout 204f6d5 || echo "Git checkout failed..."
-fi
-if [ -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes" ]; then
-    echo "Pinning KJNodes to 204f6d5"
+else
+    echo "Updating KJNodes to latest"
     git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes pull || echo "Git pull failed, continuing..."
-    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes fetch --all || echo "Git fetch failed, continuing..."
-    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-KJNodes checkout 204f6d5 || echo "Git checkout failed..."
+fi
+
+if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-Manager" ]; then
+    cd $NETWORK_VOLUME/ComfyUI/custom_nodes
+    git clone https://github.com/ltdrdata/ComfyUI-Manager.git || echo "Git clone ComfyUI-Manager failed, will try later..."
+else
+    echo "Updating ComfyUI-Manager to latest"
+    git -C $NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-Manager pull || echo "Git pull ComfyUI-Manager failed, continuing..."
 fi
 
 if [ ! -d "$NETWORK_VOLUME/ComfyUI/custom_nodes/ComfyUI-VibeVoice" ]; then
@@ -573,5 +570,15 @@ nohup python3 "$NETWORK_VOLUME/ComfyUI/main.py" --listen --use-sage-attention > 
     if curl --silent --fail "$URL" --output /dev/null; then
         echo "🚀 ComfyUI is UP"
     fi
+
+echo ""
+echo "📌 Current custom node SHAs (R&D template — unpinned):"
+for node_dir in "$CUSTOM_NODES_DIR"/*/; do
+    [[ -d "${node_dir}.git" ]] || continue
+    node_name=$(basename "$node_dir")
+    sha=$(git -C "$node_dir" rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    echo "  $node_name: $sha"
+done
+echo ""
 
     exec sleep infinity
