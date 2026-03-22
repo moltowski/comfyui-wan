@@ -27,7 +27,7 @@ jobs:
       id: tags
       run: |
         if [ "${{ github.ref_name }}" = "r&d" ]; then
-          echo "tags=moltowski/comfyui-wan:r&d" >> $GITHUB_OUTPUT
+          echo "tags=moltowski/comfyui-wan:rd" >> $GITHUB_OUTPUT
         else
           echo "tags=moltowski/comfyui-wan:latest,moltowski/comfyui-wan:${{ github.ref_name }}" >> $GITHUB_OUTPUT
         fi
