@@ -38,18 +38,6 @@ else
     echo "curl is already installed"
 fi
 
-# Start SageAttention build in the background
-echo "Starting SageAttention build..."
-(
-    export EXT_PARALLEL=4 NVCC_APPEND_FLAGS="--threads 8" MAX_JOBS=32
-    cd /tmp
-    git clone https://github.com/thu-ml/SageAttention.git || { echo "SageAttention clone failed"; exit 0; }
-    cd SageAttention
-    pip install -e . || echo "SageAttention install failed"
-    echo "SageAttention build completed" > /tmp/sage_build_done
-) > /tmp/sage_build.log 2>&1 &
-SAGE_PID=$!
-echo "SageAttention build started in background (PID: $SAGE_PID)"
 
 # Set the network volume path
 NETWORK_VOLUME="/workspace"
@@ -515,25 +503,10 @@ for file in *.zip; do
     mv "$file" "${file%.zip}.safetensors"
 done
 
-# Wait for SageAttention build to complete
-echo "Waiting for SageAttention build to complete..."
-while ! [ -f /tmp/sage_build_done ]; do
-    if ps -p $SAGE_PID > /dev/null 2>&1; then
-        echo "⚙️  SageAttention build in progress, this may take up to 5 minutes."
-        sleep 5
-    else
-        # Process finished but no completion marker - check if it failed
-        if ! [ -f /tmp/sage_build_done ]; then
-            echo "⚠️  SageAttention build process ended unexpectedly. Check logs at /tmp/sage_build.log"
-            echo "Continuing with ComfyUI startup..."
-            break
-        fi
-    fi
-done
-
-if [ -f /tmp/sage_build_done ]; then
-    echo "✅ SageAttention build completed successfully!"
-fi
+# Install SageAttention
+echo "⚙️  Installing SageAttention..."
+/opt/venv/bin/python3 -m pip install sageattention || echo "⚠️  SageAttention install failed, continuing without it..."
+echo "✅ SageAttention install complete"
 
 # Start ComfyUI
 
